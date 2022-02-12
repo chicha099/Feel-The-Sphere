@@ -80,10 +80,10 @@ light3.addColor(light3Color, "color").onChange(() => {
 });
 
 const pointLightHelper2 = new THREE.PointLightHelper(pointLight2, 0.5);
-scene.add(pointLightHelper2);
+// scene.add(pointLightHelper2);
 
 const pointLightHelper3 = new THREE.PointLightHelper(pointLight3, 0.5);
-scene.add(pointLightHelper3);
+// scene.add(pointLightHelper3);
 
 /**
  * Sizes
