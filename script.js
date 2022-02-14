@@ -7,19 +7,35 @@ import * as dat from "dat.gui";
 
 const textureLoader = new THREE.TextureLoader();
 
-const normalTexture = textureLoader.load("https://i.ibb.co/Kss6kdc/Normal-Map.png");
+const normalTexture = textureLoader.load("https://i.ibb.co/yhJ13HZ/map3.jpg");
+const normalTexture2 = textureLoader.load("https://i.ibb.co/q7cfRBt/map2.png");
+const normalTexture3 = textureLoader.load(
+  "https://i.ibb.co/SR31NT5/Ground-Dirt-009-Normal.jpg"
+);
+
+const pipeBaseColor = textureLoader.load(
+  "https://i.ibb.co/kghv5Ph/Stone-06-diffuse-Original.png"
+);
+const pipeNormalMap = textureLoader.load(
+  "https://i.ibb.co/Jn1Yg0v/Stone-06-normal.png"
+);
+const pipeHeight = textureLoader.load(
+  "https://i.ibb.co/Nj4h3dw/Stone-06-height.png"
+);
+const pipeRoughness = textureLoader.load(
+  "https://i.ibb.co/BBKps2T/Stone-06-smoothness.png"
+);
 
 // Debug
 const gui = new dat.GUI();
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
-
 // Scene
 const scene = new THREE.Scene();
-
 // Objects
 const geometry = new THREE.SphereBufferGeometry(0.5, 64, 64);
+const geometry2 = new THREE.SphereBufferGeometry(0.5, 64, 64);
 // Materials
 
 const material = new THREE.MeshStandardMaterial();
@@ -28,13 +44,29 @@ material.roughness = 0.2;
 material.normalMap = normalTexture;
 material.color = new THREE.Color("rgb(27, 156, 169)");
 
+const materialPipe = new THREE.MeshStandardMaterial({
+  normalMap: pipeNormalMap,
+  displacementMap: pipeHeight,
+  displacementScale: 0.1,
+  map: pipeBaseColor,
+  roughnessMap: pipeRoughness,
+  roughness: 50,
+});
+
+// const material2 = new THREE.MeshStandardMaterial();
+// material2.metalness = 0.7;
+// material2.roughness = 0.2;
+// material2.normalMap = normalTexture2;
+// material2.color = new THREE.Color("rgb(27, 156, 169)");
+
 // Mesh
-const sphere = new THREE.Mesh(geometry, material);
+const sphere = new THREE.Mesh(geometry, materialPipe);
+const penta = new THREE.Mesh(geometry2, material);
 scene.add(sphere);
 
 // Lights
 
-const pointLight = new THREE.PointLight(0xffffff, 0.01);
+const pointLight = new THREE.PointLight(0xffffff, 1);
 pointLight.position.x = 2;
 pointLight.position.y = 3;
 pointLight.position.z = 4;
@@ -45,13 +77,27 @@ pointLight2.position.set(-1.73, 1, -1.86);
 pointLight2.intensity = 1.4;
 scene.add(pointLight2);
 
-const pointLight3 = new THREE.PointLight("rgb(0, 255, 255)", 2);
+const pointLight3 = new THREE.PointLight("rgb(255, 255, 255)", 2);
 pointLight3.position.set(6, -5.72, -2.43);
 pointLight3.intensity = 1.12;
 scene.add(pointLight3);
 
+const light = gui.addFolder("Light 1");
 const light2 = gui.addFolder("Light 2");
 const light3 = gui.addFolder("Light 3");
+
+light.add(pointLight.position, "x").min(-10).max(10).step(0.01);
+light.add(pointLight.position, "y").min(-10).max(10).step(0.01);
+light.add(pointLight.position, "z").min(-10).max(10).step(0.01);
+light.add(pointLight, "intensity").min(-10).max(10).step(0.01);
+
+const lightColor = {
+  color: 0xff0000,
+};
+
+light.addColor(lightColor, "color").onChange(() => {
+  pointLight.color.set(lightColor.color);
+});
 
 light2.add(pointLight2.position, "x").min(-10).max(10).step(0.01);
 light2.add(pointLight2.position, "y").min(-10).max(10).step(0.01);
@@ -72,7 +118,7 @@ light3.add(pointLight3.position, "z").min(-10).max(10).step(0.01);
 light3.add(pointLight3, "intensity").min(-10).max(10).step(0.01);
 
 const light3Color = {
-  color: 0xff0000,
+  color: 0xffffff,
 };
 
 light3.addColor(light3Color, "color").onChange(() => {
@@ -156,27 +202,43 @@ function onDocumentMouseMove(event) {
   mouseY = event.clientY - windowHalfY;
 }
 
-function updateSphere(event){
-  sphere.position.y = window.scrollY * .002
+const texto = document.getElementById("perro");
+
+function reveal() {
+  var reveals = document.querySelectorAll(".reveal");
+  for (var i = 0; i < reveals.length; i++) {
+    var windowHeight = window.innerHeight;
+    var elementTop = reveals[i].getBoundingClientRect().top;
+    var elementVisible = 150;
+    if (elementTop < windowHeight - elementVisible) {
+      reveals[i].classList.add("active");
+    } else {
+      reveals[i].classList.remove("active");
+    }
+  }
 }
 
-window.addEventListener('scroll', updateSphere);
+function updateSphere(event) {
+  sphere.position.y = window.scrollY * 0.002;
+}
+
+window.addEventListener("scroll", updateSphere);
+window.addEventListener("scroll", reveal);
 
 const clock = new THREE.Clock();
 
 const tick = () => {
-
-  targetX = mouseX * .001
-  targetY = mouseY * .001
+  targetX = mouseX * 0.001;
+  targetY = mouseY * 0.001;
 
   const elapsedTime = clock.getElapsedTime();
 
   // Update objects
   sphere.rotation.y = 0.5 * elapsedTime;
 
-  sphere.rotation.y += .5 * (targetX - sphere.rotation.y)
-  sphere.rotation.x += .05 * (targetY - sphere.rotation.x)
-  sphere.position.z += -.05 * (targetY - sphere.rotation.x)
+  sphere.rotation.y += 0.5 * (targetX - sphere.rotation.y);
+  sphere.rotation.x += 0.05 * (targetY - sphere.rotation.x);
+  sphere.position.z += -0.05 * (targetY - sphere.rotation.x);
   // Update Orbital Controls
   // controls.update()
 
