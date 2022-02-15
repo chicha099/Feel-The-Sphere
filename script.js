@@ -13,17 +13,30 @@ const normalTexture3 = textureLoader.load(
   "https://i.ibb.co/SR31NT5/Ground-Dirt-009-Normal.jpg"
 );
 
-const pipeBaseColor = textureLoader.load(
+const stoneBaseColor = textureLoader.load(
   "https://i.ibb.co/kghv5Ph/Stone-06-diffuse-Original.png"
 );
-const pipeNormalMap = textureLoader.load(
+const stoneNormalMap = textureLoader.load(
   "https://i.ibb.co/Jn1Yg0v/Stone-06-normal.png"
 );
-const pipeHeight = textureLoader.load(
+const stoneHeight = textureLoader.load(
   "https://i.ibb.co/Nj4h3dw/Stone-06-height.png"
 );
-const pipeRoughness = textureLoader.load(
+const stoneRoughness = textureLoader.load(
   "https://i.ibb.co/BBKps2T/Stone-06-smoothness.png"
+);
+
+const pebblesBaseColor = textureLoader.load(
+  "https://i.ibb.co/K2Z8hwR/Pebbles-01-diffuse-Original.png"
+);
+const pebblesNormalMap = textureLoader.load(
+  "https://i.ibb.co/2v7d5GX/Pebbles-01-normal.png"
+);
+const pebblesHeight = textureLoader.load(
+  "https://i.ibb.co/dJv0ZmP/Pebbles-01-height.png"
+);
+const pebblesRoughness = textureLoader.load(
+  "https://i.ibb.co/fr7z92C/Pebbles-01-smoothness.png"
 );
 
 // Debug
@@ -36,21 +49,31 @@ const scene = new THREE.Scene();
 // Objects
 const geometry = new THREE.SphereBufferGeometry(0.5, 64, 64);
 const geometry2 = new THREE.SphereBufferGeometry(0.5, 64, 64);
+const geometry3 = new THREE.SphereBufferGeometry(0.5, 64, 64);
 // Materials
 
 const material = new THREE.MeshStandardMaterial();
-material.metalness = 0.7;
-material.roughness = 0.2;
+material.metalness = 0.8;
+material.roughness = 0.1;
 material.normalMap = normalTexture;
 material.color = new THREE.Color("rgb(27, 156, 169)");
 
-const materialPipe = new THREE.MeshStandardMaterial({
-  normalMap: pipeNormalMap,
-  displacementMap: pipeHeight,
+const materialStone = new THREE.MeshStandardMaterial({
+  normalMap: stoneNormalMap,
+  displacementMap: stoneHeight,
   displacementScale: 0.1,
-  map: pipeBaseColor,
-  roughnessMap: pipeRoughness,
+  map: stoneBaseColor,
+  roughnessMap: stoneRoughness,
   roughness: 50,
+});
+
+const materialPebbles = new THREE.MeshStandardMaterial({
+  normalMap: pebblesNormalMap,
+  displacementMap: pebblesHeight,
+  displacementScale: 0.1,
+  map: pebblesBaseColor,
+  roughnessMap: pebblesRoughness,
+  roughness: 5,
 });
 
 // const material2 = new THREE.MeshStandardMaterial();
@@ -60,10 +83,13 @@ const materialPipe = new THREE.MeshStandardMaterial({
 // material2.color = new THREE.Color("rgb(27, 156, 169)");
 
 // Mesh
-const sphere = new THREE.Mesh(geometry, materialPipe);
-const penta = new THREE.Mesh(geometry2, material);
-scene.add(sphere);
-
+const sphere = new THREE.Mesh(geometry, materialStone);
+const penta = new THREE.Mesh(geometry2, materialPebbles);
+const bola = new THREE.Mesh(geometry3, material);
+scene.add(bola, penta, sphere);
+bola.position.set(-1.5, 0, -2);
+penta.position.set(0, 0, -1);
+sphere.position.set(1.5, 0, 0);
 // Lights
 
 const pointLight = new THREE.PointLight(0xffffff, 1);
@@ -220,6 +246,9 @@ function reveal() {
 
 function updateSphere(event) {
   sphere.position.y = window.scrollY * 0.002;
+  penta.position.y = window.scrollY * 0.002;
+  bola.position.y = window.scrollY * 0.002;
+
 }
 
 window.addEventListener("scroll", updateSphere);
@@ -239,6 +268,18 @@ const tick = () => {
   sphere.rotation.y += 0.5 * (targetX - sphere.rotation.y);
   sphere.rotation.x += 0.05 * (targetY - sphere.rotation.x);
   sphere.position.z += -0.05 * (targetY - sphere.rotation.x);
+
+  penta.rotation.y = 0.5 * elapsedTime;
+
+  penta.rotation.y += 0.5 * (targetX - penta.rotation.y);
+  penta.rotation.x += 0.05 * (targetY - penta.rotation.x);
+  penta.position.z += -0.17 * (targetY - penta.rotation.x);
+
+  bola.rotation.y = 0.5 * elapsedTime;
+
+  bola.rotation.y += 0.5 * (targetX - bola.rotation.y);
+  bola.rotation.x += 0.05 * (targetY - bola.rotation.x);
+  bola.position.z += -0.3 * (targetY - bola.rotation.x);
   // Update Orbital Controls
   // controls.update()
 
